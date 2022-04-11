@@ -1,3 +1,4 @@
+use std::io::Read;
 use std::net::TcpListener;
 
 pub struct Server
@@ -28,10 +29,13 @@ impl Server
         {   
             match listener.accept()
             {
-                Ok((stream, _)) => {
-                                        let a = 5;
-                                        println!("OK");
-                                     },
+                Ok((mut stream, _)) => {
+                                        // Allocating a buffer
+                                        let mut buffer = [0; 1024];
+
+                                        // Reading the byte the client has sent
+                                        stream.read(&mut buffer);
+                                       },
 
                 Err(e) => println!("Failed to establich a connection: {}", e),
             }
