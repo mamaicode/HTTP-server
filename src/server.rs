@@ -22,6 +22,20 @@ impl Server
         //https://doc.rust-lang.org/std/#modules
         // Creating TCP socket and binding it to the address that we want to use
         let listener = TcpListener::bind(&self.addr).unwrap();
+        
+        // An infinite loop, on every iteration checking for new connections
+        loop
+        {   
+            match listener.accept()
+            {
+                Ok((stream, _)) => {
+                                        let a = 5;
+                                        println!("OK");
+                                     },
+
+                Err(e) => println!("Failed to establich a connection: {}", e),
+            }
+        }
     }
 }
 
