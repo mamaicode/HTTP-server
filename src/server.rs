@@ -1,4 +1,8 @@
 use std::io::Read;
+// Pulling request in our scope
+use crate::http::Request;
+use std::convert::TryFrom;
+use std::convert::TryInto;
 use std::net::TcpListener;
 
 pub struct Server
@@ -20,7 +24,7 @@ impl Server
     {   
         println!("Listening on {}", self.addr);
 
-        //https://doc.rust-lang.org/std/#modules
+        //https://doc.rust-lang.org/std/#modulesD
         // Creating TCP socket and binding it to the address that we want to use
         let listener = TcpListener::bind(&self.addr).unwrap();
         
@@ -37,6 +41,13 @@ impl Server
                                         match stream.read(&mut buffer)
                                         {   Ok(_) => {  // Converting the buffer into actual text 
                                                         println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                                                        
+                                                        match Request::try_from(&buffer[..]);
+                                                        {
+                                                            Ok(request) => {},
+                                                            Err(e) => println!("Failed to parse a request: {}", e),
+                                                        }
+                                                        
                                                      }
 
                                             Err(e) => println!{"Failed to read from connection: {}", e}
@@ -48,6 +59,7 @@ impl Server
         }
     }
 }
+
 
 
 
