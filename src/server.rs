@@ -34,7 +34,13 @@ impl Server
                                         let mut buffer = [0; 1024];
 
                                         // Reading the byte the client has sent
-                                        stream.read(&mut buffer);
+                                        match stream.read(&mut buffer)
+                                        {   Ok(_) => {  // Converting the buffer into actual text 
+                                                        println!("Received a request: {}", String::from_utf8_lossy(&buffer));
+                                                     }
+
+                                            Err(e) => println!{"Failed to read from connection: {}", e}
+                                        }
                                        },
 
                 Err(e) => println!("Failed to establich a connection: {}", e),
