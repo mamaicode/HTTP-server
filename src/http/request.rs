@@ -25,7 +25,7 @@ impl TryFrom<&[u8]> for Request
         let request = str::from_utf8(buf)?;
 
         let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
-        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (mut path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
         // Supporting HTTP 1.1 only!
         if protocol != "HTTP/1.1"
@@ -36,6 +36,13 @@ impl TryFrom<&[u8]> for Request
         // Converting it into enum
         let method: Method = method.parse()?;
 
+        let mut query_string = None;
+        // Clean code to avoid empty match variables, if let syntax is used
+        if let Some(i) = path.find('?')
+        {
+            query_string = Some(&path[i + 1..]);
+            path = &path[..i];
+        }
 
         unimplemented!()
     }
@@ -116,3 +123,5 @@ impl Error for ParseError
 {
 
 }
+
+
