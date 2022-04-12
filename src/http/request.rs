@@ -1,9 +1,10 @@
 use std::str::Utf8Error;
-use super::method::Method;
+use super::method::{Method, MethodError};
 use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
+
 
 // Modeling the data we work with, handling HTTP requests and returning HTTP responces 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
@@ -23,8 +24,33 @@ impl TryFrom<&[u8]> for Request
     {
         let request = str::from_utf8(buf)?;
 
+        let (method, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (path, request) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        let (protocol, _) = get_next_word(request).ok_or(ParseError::InvalidRequest)?;
+        // Supporting HTTP 1.1 only!
+        if protocol != "HTTP/1.1"
+        {
+            return Err(ParseError::InvalidProtocol);
+        }
+
+        // Converting it into enum
+        let method: Method = method.parse()?;
+
+
         unimplemented!()
     }
+}
+
+fn get_next_word(request: &str) -> Option<(&str, &str)>
+{   // Looping through string slice to find whitespace
+    for (i, c) in request.chars().enumerate()
+    {
+        if c == ' ' || c == '\r'
+        {   // Adding one byte to i to skip whitespace, as whitespace takes up 1 byte
+            return Some((&request[..i], &request[i + 1..]));
+        }
+    }
+    None
 }
 
 // Custom error type
@@ -47,6 +73,14 @@ impl ParseError
             Self::InvalidProtocol => "InvalidProtocol",
             Self::InvalidMethod => "InvalidMethod",
         }
+    }
+}
+
+impl From<MethodError> for ParseError
+{
+    fn from(_: MethodError) -> Self
+    {
+        Self::InvalidMethod
     }
 }
 
