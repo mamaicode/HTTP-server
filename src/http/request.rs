@@ -8,19 +8,19 @@ use std::str;
 
 // Modeling the data we work with, handling HTTP requests and returning HTTP responces 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
-pub struct Request
-{   path: String,
-    // Absence of a value in a type safe way without a fear of no pointer exceptions <String>
-    query_string: Option<String>,                   
+pub struct Request<'buf> // 'buf is the lifetime to our buffer
+{   path: &'buf str,
+    // Absence of a value in a typesafe way without a fear of no pointer exceptions <String>
+    query_string: Option<&'buf str>,                   
     method: Method,
 }
 
-impl TryFrom<&[u8]> for Request
+impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>
 {
     type Error = ParseError;
 
     // Parsing the request
-    fn try_from(buf: &[u8]) -> Result<Self, Self::Error> 
+    fn try_from(buf: &'buf [u8]) -> Result<Request<'buf>, Self::Error> 
     {
         let request = str::from_utf8(buf)?;
 
@@ -44,7 +44,13 @@ impl TryFrom<&[u8]> for Request
             path = &path[..i];
         }
 
-        unimplemented!()
+        // Creating a new request
+        Ok(Self
+        {
+            path,
+            query_string,
+            method,
+        })
     }
 }
 
@@ -57,6 +63,7 @@ fn get_next_word(request: &str) -> Option<(&str, &str)>
             return Some((&request[..i], &request[i + 1..]));
         }
     }
+
     None
 }
 
