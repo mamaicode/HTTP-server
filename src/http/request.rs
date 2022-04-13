@@ -4,14 +4,14 @@ use std::convert::TryFrom;
 use std::error::Error;
 use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
-
+use super::{QueryString};
 
 // Modeling the data we work with, handling HTTP requests and returning HTTP responces 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
 pub struct Request<'buf> // 'buf is the lifetime to our buffer
 {   path: &'buf str,
     // Absence of a value in a typesafe way without a fear of no pointer exceptions <String>
-    query_string: Option<&'buf str>,                   
+    query_string: Option<QueryString<'buf>>,                   
     method: Method,
 }
 
@@ -40,7 +40,7 @@ impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>
         // Clean code to avoid empty match variables, if let syntax is used
         if let Some(i) = path.find('?')
         {
-            query_string = Some(&path[i + 1..]);
+            query_string = Some(QueryString::from(&path[i + 1..]));
             path = &path[..i];
         }
 
