@@ -2,7 +2,6 @@ use std::io::Read;
 // Pulling request in our scope
 use crate::http::Request;
 use std::convert::TryFrom;
-use std::convert::TryInto;
 use std::net::TcpListener;
 
 pub struct Server
