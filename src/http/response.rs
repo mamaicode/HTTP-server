@@ -1,7 +1,8 @@
-pub enum StatusCode{}
+use super::StatusCode;
 
 // Representing HTTP response 
 // This struct stores the status code and the body
+#[derive(Debug)]
 pub struct Response
 { 
      // Stores the HTTP status code and the body
@@ -17,5 +18,5 @@ impl Response
     pub fn new(status_code: StatusCode, body: Option<String>) -> Self {
                                                                     // Creating a new response
                                                                     Response{status_code,body}
-                                                                 }
+                                                                      }
 }
