@@ -6,8 +6,10 @@ use std::fmt::{Debug, Display, Formatter, Result as FmtResult};
 use std::str;
 use super::{QueryString};
 
+// Syntax for attribute -> #[derive(Debug)]
 // Modeling the data we work with, handling HTTP requests and returning HTTP responces 
 // https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods
+#[derive(Debug)]
 pub struct Request<'buf> // 'buf is the lifetime to our buffer
 {   path: &'buf str,
     // Absence of a value in a typesafe way without a fear of no pointer exceptions <String>
@@ -130,5 +132,4 @@ impl Error for ParseError
 {
 
 }
-
 
