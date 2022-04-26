@@ -1,6 +1,6 @@
-use std::io::Read;
+use std::io::{Read, Write};
 // Pulling request in our scope
-use crate::http::Request;
+use crate::http::{Request, Response, StatusCode};
 use std::convert::TryFrom;
 use std::net::TcpListener;
 
@@ -46,6 +46,11 @@ impl Server
                                                             Ok(request) => {
 
                                                                                 dbg!(request);
+                                                                                // Importing response
+                                                                                let response = Response::new(
+                                                                                    StatusCode::Ok, 
+                                                                                    Some("<h1>Working<h/1>".to_string()));
+                                                                                write!(stream, "{}", response);
 
                                                                            }
 
