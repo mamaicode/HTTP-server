@@ -21,9 +21,9 @@ impl Response
     pub fn new(status_code: StatusCode, body: Option<String>) -> Self {
                                                                     // Creating a new response
                                                                     Response{status_code,body}
-                                                                      }
+                                                                       }
     // Dynamically generating HTTP response from the response struct
-    pub fn send(&self, stream: &mut TcpStream) -> IoResult<()> {
+    pub fn send(&self, stream: &mut impl Write) -> IoResult<()> {
                                                                   let body = match &self.body{
                                                                   
                                                                     Some(b) => b,
