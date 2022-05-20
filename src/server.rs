@@ -41,27 +41,34 @@ impl Server
                                         {   Ok(_) => {  // Converting the buffer into actual text 
                                                         println!("Received a request: {}", String::from_utf8_lossy(&buffer));
                                                         
-                                                        match Request::try_from(&buffer[..])
+                                                        let response = match Request::try_from(&buffer[..])
                                                         {
                                                             Ok(request) => {
 
                                                                                 dbg!(request);
                                                                                 // Importing response
-                                                                                let response = Response::new(
-                                                                                    StatusCode::Ok, 
-                                                                                    Some("<h1>Working<h/1>".to_string()));
-                                                                                write!(stream, "{}", response);
-
+                                                                                Response::new(
+                                                                                                StatusCode::Ok, 
+                                                                                                Some("<h1>Working<h/1>".to_string()),
+                                                                                             )
                                                                            }
 
-                                                            Err(e) => println!("Failed to parse a request: {}", e),
-                                                        }
+                                                            Err(e) => {
+                                                                        println!("Failed to parse a request: {}", e);
+                                                                        Response::new(StatusCode::BadRequest, None)
+                                                                      }
+                                                        };
                                                         
+                                                        if let Err(e) = response.send(&mut stream)
+                                                        {
+                                                            println!("Failed to send response: {}", e);
+                                                        }
+
                                                      }
 
-                                            Err(e) => println!{"Failed to read from connection: {}", e}
+                                            Err(e) => println!{"Failed to read from connection: {}", e},
                                         }
-                                       },
+                                       }
 
                 Err(e) => println!("Failed to establich a connection: {}", e),
             }
