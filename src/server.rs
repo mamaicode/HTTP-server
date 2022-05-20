@@ -1,8 +1,21 @@
-use std::io::{Read, Write};
+use std::io::Read;
 // Pulling request in our scope
-use crate::http::{Request, Response, StatusCode};
+use crate::http::{Request, Response, StatusCode, ParseError};
 use std::convert::TryFrom;
 use std::net::TcpListener;
+
+pub trait Handler
+{
+    // Method for handling a request
+    fn handle_request(&mut self, request: &Request) -> Response; 
+    // Method for handling a bad request
+    fn handle_bad_request(&mut self, e: &ParseError) -> Response
+    {
+        println!("Failed to parse request: {}", e);
+        Response::new(StatusCode::BadRequest, None)
+    }
+}
+
 
 pub struct Server
 {
@@ -12,14 +25,14 @@ pub struct Server
 // Implementation block for struct
 impl Server
 {
-// Writing associative function
+    // Writing associative function
     pub fn new(addr: String) -> Self                           
     {
         Self { addr } 
     }      
 
-// Implementing the run method
-    pub fn run(self)
+    // Implementing the run method
+    pub fn run(self, mut handler: impl Handler)
     {   
         println!("Listening on {}", self.addr);
 
@@ -43,20 +56,9 @@ impl Server
                                                         
                                                         let response = match Request::try_from(&buffer[..])
                                                         {
-                                                            Ok(request) => {
-
-                                                                                dbg!(request);
-                                                                                // Importing response
-                                                                                Response::new(
-                                                                                                StatusCode::Ok, 
-                                                                                                Some("<h1>Working<h/1>".to_string()),
-                                                                                             )
-                                                                           }
-
-                                                            Err(e) => {
-                                                                        println!("Failed to parse a request: {}", e);
-                                                                        Response::new(StatusCode::BadRequest, None)
-                                                                      }
+                                                            Ok(request) => handler.handle_request(&request),
+                                                            Err(e) => handler.handle_bad_request(&e),
+                                                                
                                                         };
                                                         
                                                         if let Err(e) = response.send(&mut stream)
