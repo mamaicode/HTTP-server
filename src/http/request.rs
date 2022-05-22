@@ -17,6 +17,23 @@ pub struct Request<'buf> // 'buf is the lifetime to our buffer
     method: Method,
 }
 
+// Implementing Getters for the request
+impl<'buf> Request<'buf>
+{
+    // Naming the Getter after the field without prefixing it with the Get word
+    pub fn ath(&self) -> &str{
+                                &self.path
+                             }
+    // Another one for the method
+    pub fn method(&self) -> &Method{
+                                      &self.method
+                                   }
+    // Query string
+    pub fn query_string(&self) -> Option<&QueryString>{
+                                                         &self.query_string.as_ref()
+                                                      }
+}
+
 impl<'buf> TryFrom<&'buf [u8]> for Request<'buf>
 {
     type Error = ParseError;
