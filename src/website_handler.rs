@@ -10,6 +10,7 @@ impl Handler for WebsiteHandler
                                                                                             // Handling GET requests
                                                                                             Method::GET => match request.path(){
                                                                                                                                   "/" => Response::new(StatusCode::Ok, Some("<h1>OK</h1>".to_string())),
+                                                                                                                                  "/user" => Response::new(StatusCode::Ok, Some("<h1>Welcome User</h1>".to_string())),
                                                                                                                                   _ => Response::new(StatusCode::NotFound, None),      
                                                                                                                                }
 
