@@ -21,7 +21,7 @@ pub struct Request<'buf> // 'buf is the lifetime to our buffer
 impl<'buf> Request<'buf>
 {
     // Naming the Getter after the field without prefixing it with the Get word
-    pub fn ath(&self) -> &str{
+    pub fn path(&self) -> &str{
                                 &self.path
                              }
     // Another one for the method
@@ -30,7 +30,7 @@ impl<'buf> Request<'buf>
                                    }
     // Query string
     pub fn query_string(&self) -> Option<&QueryString>{
-                                                         &self.query_string.as_ref()
+                                                         self.query_string.as_ref()
                                                       }
 }
 
